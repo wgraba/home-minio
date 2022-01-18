@@ -1,0 +1,32 @@
+version: "3"
+services:
+  minio:
+    image: quay.io/minio/minio:RELEASE.2022-01-08T03-11-54Z
+    command: server --address ":9000" --console-address ":9001" /data
+    env_file:
+      - minio.env
+    labels:
+      - traefik.http.routers.minio.entryPoints=minio
+      - traefik.http.routers.minio.rule=Host(`minio.federation.home`)
+      - traefik.http.routers.minio.tls=true
+      - traefik.http.routers.minio.service=minio-service
+      - traefik.http.services.minio-service.loadbalancer.server.port=9000
+      - traefik.http.routers.minio-console.entryPoints=minio-console
+      - traefik.http.routers.minio-console.rule=Host(`minio-console.federation.home`)
+      - traefik.http.routers.minio-console.tls=true
+      - traefik.http.routers.minio-console.service=minio-console-service
+      - traefik.http.services.minio-console-service.loadbalancer.server.port=9001
+    networks:
+      - web
+    user: "33:33"
+    volumes:
+      - minio-data:/data
+
+volumes:
+  minio-data:
+    external: true
+
+networks:
+  web:
+    external: true
+  
