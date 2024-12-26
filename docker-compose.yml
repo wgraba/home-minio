@@ -1,22 +1,23 @@
 version: "3"
 services:
   minio:
-    image: minio/minio:RELEASE.2023-11-20T22-40-07Z
+    image: minio/minio:RELEASE.2024-01-18T22-51-28Z
     command: server --address ":9000" --console-address ":9001" /data
     env_file:
       - minio.env
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9000/minio/health/live"
-        ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+    #healthcheck:
+    #  test:
+    #    [
+    #      "CMD",
+    #      "curl",
+    #      "-f",
+    #      "https://minio.federation.home:9000/minio/health/live"
+    #    ]
+    #  interval: 30s
+    #  timeout: 20s
+    #  retries: 3
     labels:
+      - traefik.enable=true
       - traefik.http.routers.minio.entryPoints=minio
       - traefik.http.routers.minio.rule=Host(`minio.federation.home`)
       - traefik.http.routers.minio.tls=true
